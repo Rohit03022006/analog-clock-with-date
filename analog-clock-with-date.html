@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analog Clock with Date and Sticky Notes</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+
+:root {
+    --primary-color: #f0f8ff; /* Light azure */
+    --white-color: #fff;
+    --black-color: #1a1a2e; /* Dark blue instead of pure black */
+    --accent-color: #ff6b9d; /* Pink */
+    --secondary-color: #87ceeb; /* Sky blue */
+    --note-color-1: #fff9c4; /* Light yellow */
+    --note-color-2: #c8e6c9; /* Light green */
+    --note-color-3: #bbdefb; /* Light blue */
+    --note-color-4: #ffccbc; /* Light orange */
+    --note-color-5: #e1bee7; /* Light purple */
+    --note-color-6: #ffcdd2; /* Light red */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    background-image: linear-gradient(to right, #ff9a9e 0%, #fad0c4 100%); /* Pink gradient */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    overflow-x: hidden;
+    background-size: cover;
+    height: 100vh;
+    overflow-y: hidden; /* Prevent whole page scrolling */
+}
+
+.main {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: 20px;
+    position: relative;
+    flex-wrap: wrap;
+}
+
+.container {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    min-width: 1400px;
+    margin-bottom: 20px;
+}
+
+.container > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 550px;
+    height: 550px;
+    padding: 30px;
+}
+
+.container .clock {
+    display: flex;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    background: var(--white-color);
+    box-shadow: 0 15px 25px rgba(255, 105, 157, 0.2), 0 25px 45px rgba(135, 206, 235, 0.2);
+    position: relative;
+}
+
+.clock label {
+    position: absolute;
+    inset: 20px;
+    text-align: center;
+    transform: rotate(calc(var(--i) * (360deg / 12)));
+}
+
+.clock label span {
+    display: inline-block;
+    font-size: 40px;
+    font-weight: 600;
+    color: var(--black-color);
+    transform: rotate(calc(var(--i) * (-360deg / 12)));
+}
+
+.container .indicator {
+    position: absolute;
+    height: 10px;
+    width: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.indicator::before {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+    z-index: 100;
+    background: var(--black-color);
+    border: 4px solid var(--accent-color); /* Pink accent */
+}
+
+.indicator .hand {
+    position: absolute;
+    height: 210px;
+    width: 4px;
+    bottom: 0;
+    border-radius: 25px;
+    transform-origin: bottom;
+    background: var(--accent-color); /* Pink hands */
+}
+
+.hand.minute {
+    height: 200px;
+    width: 5px;
+    background: var(--secondary-color); /* Sky blue */
+}
+
+.hand.hour {
+    height: 150px;
+    width: 8px;
+    background: var(--secondary-color); /* Sky blue */
+}
+
+.date {
+    text-align: center;
+}
+
+.date > h1 {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    letter-spacing: 10px;
+    width: 100%;
+    font-size: 110px;
+    color: var(--primary-color);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.month-day {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 95%;
+}
+
+.month-day > h2 {
+    background-color: var(--secondary-color); /* Sky blue background */
+    color: var(--black-color);
+    font-size: 80px;
+    width: 250px;
+    border-radius: 10px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(255, 105, 157, 0.3);
+}
+
+#hourMinSec {
+    font-size: 140px;
+    color: var(--black-color);
+    text-shadow: 2px 2px 4px rgba(255, 105, 157, 0.3);
+}
+
+/* Sticky Notes Styles */
+.sticky-notes-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 100;
+    max-height: 80vh; /* Limit height to viewport */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Disable horizontal scrolling */
+    padding: 10px;
+    width: 220px; /* Fixed width to prevent layout shift */
+}
+
+/* Custom scrollbar for sticky notes */
+.sticky-notes-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sticky-notes-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.sticky-notes-container::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 4px;
+}
+
+.sticky-notes-container::-webkit-scrollbar-thumb:hover {
+    background: #ff4785;
+}
+
+.sticky-note {
+    width: 200px;
+    min-height: 150px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    transform: rotate(2deg);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    flex-shrink: 0; /* Prevent notes from shrinking */
+}
+
+.sticky-note:hover {
+    transform: rotate(0deg) scale(1.05);
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.sticky-note textarea {
+    width: 100%;
+    height: calc(100% - 25px);
+    border: none;
+    background: transparent;
+    resize: none;
+    outline: none;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+}
+
+.sticky-note::after {
+    content: '';
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+}
+
+.note-1 { background-color: var(--note-color-1); }
+.note-2 { background-color: var(--note-color-2); transform: rotate(-1deg); }
+.note-3 { background-color: var(--note-color-3); transform: rotate(3deg); }
+.note-4 { background-color: var(--note-color-4); transform: rotate(-2deg); }
+.note-5 { background-color: var(--note-color-5); transform: rotate(1deg); }
+.note-6 { background-color: var(--note-color-6); transform: rotate(-3deg); }
+
+.add-note-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 101;
+}
+
+.add-note-btn:hover {
+    transform: scale(1.1);
+}
+
+.delete-note-btn {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgba(255, 0, 0, 0.3);
+    color: #fff;
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.delete-note-btn:hover {
+    background-color: rgba(255, 0, 0, 0.7);
+    transform: scale(1.1);
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 1600px) {
+    .container {
+        min-width: 1200px;
+    }
+    
+    .container > div {
+        width: 450px;
+        height: 450px;
+    }
+    
+    .clock label span {
+        font-size: 32px;
+    }
+    
+    .indicator .hand {
+        height: 170px;
+    }
+    
+    .hand.minute {
+        height: 160px;
+    }
+    
+    .hand.hour {
+        height: 120px;
+    }
+    
+    .date > h1 {
+        font-size: 90px;
+    }
+    
+    .month-day > h2 {
+        font-size: 60px;
+        width: 200px;
+        height: 120px;
+    }
+    
+    #hourMinSec {
+        font-size: 110px;
+    }
+}
+
+@media (max-width: 1300px) {
+    .container {
+        min-width: 1000px;
+    }
+    
+    .container > div {
+        width: 380px;
+        height: 380px;
+    }
+    
+    .clock label span {
+        font-size: 28px;
+    }
+    
+    .indicator .hand {
+        height: 140px;
+    }
+    
+    .hand.minute {
+        height: 130px;
+    }
+    
+    .hand.hour {
+        height: 100px;
+    }
+    
+    .date > h1 {
+        font-size: 70px;
+    }
+    
+    .month-day > h2 {
+        font-size: 50px;
+        width: 160px;
+        height: 100px;
+    }
+    
+    #hourMinSec {
+        font-size: 90px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .main {
+        flex-direction: column;
+        align-items: center;
+        padding-top: 10px;
+    }
+    
+    .container {
+        flex-direction: column;
+        min-width: auto;
+        height: auto;
+        padding: 20px;
+        margin-bottom: 10px;
+    }
+    
+    .container > div {
+        width: 350px;
+        height: 350px;
+        margin: 10px 0;
+    }
+    
+    .date > h1 {
+        font-size: 60px;
+        letter-spacing: 5px;
+    }
+    
+    .month-day > h2 {
+        font-size: 40px;
+        width: 140px;
+        height: 80px;
+    }
+    
+    #hourMinSec {
+        font-size: 70px;
+    }
+    
+    .sticky-notes-container {
+        position: relative;
+        top: auto;
+        right: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 100%;
+        width: auto;
+        max-height: none;
+        overflow-y: visible;
+        margin-top: 10px;
+    }
+    
+    .sticky-note {
+        width: 150px;
+        min-height: 120px;
+    }
+    
+    .add-note-btn {
+        bottom: 10px;
+        right: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    .container > div {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .clock label span {
+        font-size: 24px;
+    }
+    
+    .indicator .hand {
+        height: 120px;
+    }
+    
+    .hand.minute {
+        height: 110px;
+    }
+    
+    .hand.hour {
+        height: 80px;
+    }
+    
+    .date > h1 {
+        font-size: 50px;
+    }
+    
+    .month-day > h2 {
+        font-size: 30px;
+        width: 110px;
+        height: 70px;
+    }
+    
+    #hourMinSec {
+        font-size: 50px;
+    }
+    
+    .sticky-note {
+        width: 120px;
+        min-height: 100px;
+    }
+}
+
+@media (max-width: 400px) {
+    .container > div {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .clock label span {
+        font-size: 20px;
+    }
+    
+    .indicator .hand {
+        height: 100px;
+    }
+    
+    .hand.minute {
+        height: 90px;
+    }
+    
+    .hand.hour {
+        height: 70px;
+    }
+    
+    .date > h1 {
+        font-size: 40px;
+    }
+    
+    .month-day > h2 {
+        font-size: 24px;
+        width: 90px;
+        height: 60px;
+    }
+    
+    #hourMinSec {
+        font-size: 40px;
+    }
+    
+    .sticky-notes-container {
+        gap: 10px;
+    }
+    
+    .sticky-note {
+        width: 100px;
+        min-height: 80px;
+        padding: 8px;
+    }
+    
+    .delete-note-btn {
+        width: 15px;
+        height: 15px;
+        font-size: 10px;
+    }
+}
+</style>
+</head>
+<body>
+    
+    <div class="main">
+        <div class="container">
+            <div class="clock">
+                <label style="--i: 1"><span>1</span></label>
+                <label style="--i: 2"><span>2</span></label>
+                <label style="--i: 3"><span>3</span></label>
+                <label style="--i: 4"><span>4</span></label>
+                <label style="--i: 5"><span>5</span></label>
+                <label style="--i: 6"><span>6</span></label>
+                <label style="--i: 7"><span>7</span></label>
+                <label style="--i: 8"><span>8</span></label>
+                <label style="--i: 9"><span>9</span></label>
+                <label style="--i: 10"><span>10</span></label>
+                <label style="--i: 11"><span>11</span></label>
+                <label style="--i: 12"><span>12</span></label>
+        
+                <div class="indicator">
+                    <span class="hand hour"></span>
+                    <span class="hand minute"></span>
+                    <span class="hand second"></span>
+                </div>
+            </div>
+            <div class="date">
+                <h1 id="hourMinSec">12:00:00</h1>
+                <h1 id="dayOfTheWeek">MONDAY</h1>
+                <div class="month-day">
+                    <h2 id="month">APR</h2>
+                    <h2 id="day">22</h2>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sticky Notes Container -->
+        <div class="sticky-notes-container">
+            <div class="sticky-note note-1">
+                <textarea placeholder="Write your note here...">Reminder: Meeting at 3PM</textarea>
+                <button class="delete-note-btn">×</button>
+            </div>
+            <div class="sticky-note note-2">
+                <textarea placeholder="Write your note here...">Buy groceries</textarea>
+                <button class="delete-note-btn">×</button>
+            </div>
+            <div class="sticky-note note-3">
+                <textarea placeholder="Write your note here...">Call mom this weekend</textarea>
+                <button class="delete-note-btn">×</button>
+            </div>
+        </div>
+        
+        <!-- Add Note Button -->
+        <button class="add-note-btn" id="addNoteBtn">+</button>
+    </div>
+
+    
+    <script>
+        const hourHand = document.querySelector(".hour");
+        const minuteHand = document.querySelector(".minute");
+        const secondHand = document.querySelector(".second");
+        const hourMinSec = document.getElementById("hourMinSec");
+        const dayOfTheWeek = document.getElementById("dayOfTheWeek");
+        const month = document.getElementById("month");
+        const day = document.getElementById("day");
+        const addNoteBtn = document.getElementById("addNoteBtn");
+        const stickyNotesContainer = document.querySelector(".sticky-notes-container");
+
+        const updateTime = () => {
+            let date = new Date();
+            let hours = date.getHours().toString().padStart(2, '0');
+            let minutes = date.getMinutes().toString().padStart(2, '0');
+            let seconds = date.getSeconds().toString().padStart(2, '0');
+            let dayOfWeek = date.toLocaleString('en-US', { weekday: 'long' });
+            let monthName = date.toLocaleString('default', { month: 'short' });
+            let dayOfMonth = date.getDate().toString().padStart(2, '0');
+
+            hourMinSec.textContent = `${hours}:${minutes}:${seconds}`;
+            dayOfTheWeek.textContent = dayOfWeek.toUpperCase();
+            month.textContent = monthName.toUpperCase();
+            day.textContent = dayOfMonth;
+            
+            let secToDeg = (date.getSeconds() / 60) * 360;
+            let minToDeg = (date.getMinutes() / 60) * 360;
+            let hrToDeg = (date.getHours() / 12) * 360;
+
+            secondHand.style.transform = `rotate(${secToDeg}deg)`;
+            minuteHand.style.transform = `rotate(${minToDeg}deg)`;
+            hourHand.style.transform = `rotate(${hrToDeg}deg)`;
+        };
+
+        // Add new sticky note with random color
+        addNoteBtn.addEventListener('click', () => {
+            const noteColors = ['note-1', 'note-2', 'note-3', 'note-4', 'note-5', 'note-6'];
+            const randomColor = noteColors[Math.floor(Math.random() * noteColors.length)];
+            const randomRotation = (Math.random() * 6) - 3; // Between -3 and 3 degrees
+            
+            const newNote = document.createElement('div');
+            newNote.className = `sticky-note ${randomColor}`;
+            newNote.style.transform = `rotate(${randomRotation}deg)`;
+            newNote.innerHTML = `
+                <textarea placeholder="Write your note here..."></textarea>
+                <button class="delete-note-btn">×</button>
+            `;
+            
+            stickyNotesContainer.appendChild(newNote);
+            
+            // Scroll to the bottom when adding a new note
+            stickyNotesContainer.scrollTop = stickyNotesContainer.scrollHeight;
+            
+            // Add delete functionality to the new button
+            newNote.querySelector('.delete-note-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                newNote.remove();
+                saveNotes();
+            });
+            
+            // Focus on the new note's textarea
+            newNote.querySelector('textarea').focus();
+            saveNotes();
+        });
+
+        // Add delete functionality to existing notes
+        document.querySelectorAll('.delete-note-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                btn.parentElement.remove();
+                saveNotes();
+            });
+        });
+
+        // Save notes to localStorage when changed
+        document.addEventListener('input', (e) => {
+            if (e.target.tagName === 'TEXTAREA') {
+                saveNotes();
+            }
+        });
+
+        // Save notes to localStorage
+        function saveNotes() {
+            const notes = [];
+            document.querySelectorAll('.sticky-note').forEach(note => {
+                notes.push({
+                    text: note.querySelector('textarea').value,
+                    color: Array.from(note.classList).find(cls => cls.startsWith('note-')) || 'note-1',
+                    rotation: note.style.transform || 'rotate(0deg)'
+                });
+            });
+            localStorage.setItem('stickyNotes', JSON.stringify(notes));
+        }
+
+        // Load notes from localStorage
+        function loadNotes() {
+            const savedNotes = localStorage.getItem('stickyNotes');
+            if (savedNotes) {
+                const notes = JSON.parse(savedNotes);
+                stickyNotesContainer.innerHTML = ''; // Clear existing notes
+                
+                notes.forEach(noteData => {
+                    const newNote = document.createElement('div');
+                    newNote.className = `sticky-note ${noteData.color}`;
+                    newNote.style.transform = noteData.rotation;
+                    newNote.innerHTML = `
+                        <textarea placeholder="Write your note here...">${noteData.text}</textarea>
+                        <button class="delete-note-btn">×</button>
+                    `;
+                    
+                    stickyNotesContainer.appendChild(newNote);
+                    
+                    // Add delete functionality to the loaded note
+                    newNote.querySelector('.delete-note-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        newNote.remove();
+                        saveNotes();
+                    });
+                });
+            }
+        }
+
+        // Initialize
+        setInterval(updateTime, 1000);
+        updateTime();
+        loadNotes();
+    </script>
+</body>
+</html>
