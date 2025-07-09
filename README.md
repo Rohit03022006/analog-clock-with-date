@@ -1,4 +1,3 @@
-Here's a `README.md` file for your **Analog Clock with Date and Sticky Notes** project:
 
 ---
 
@@ -23,7 +22,7 @@ A responsive and visually engaging web application that features a **live analog
 
 ---
 
-## 💻 Technologies Used
+## Technologies Used
 
 * HTML5
 * CSS3 (including media queries and CSS variables)
@@ -32,7 +31,7 @@ A responsive and visually engaging web application that features a **live analog
 
 ---
 
-## 📂 File Structure
+## File Structure
 
 ```
 project-folder/
@@ -43,12 +42,12 @@ project-folder/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Clone or Download
 
 ```
-git clone https://github.com/yourusername/analog-clock-sticky-notes.git
+git clone https://github.com/Rohit03022006/analog-clock-sticky-notes.git
 ```
 
 ### 2. Open in Browser
@@ -57,7 +56,7 @@ Open `index.html` in any modern web browser.
 
 ---
 
-## 🧠 How It Works
+## How It Works
 
 ### Analog Clock:
 
@@ -74,14 +73,14 @@ Open `index.html` in any modern web browser.
 
 ---
 
-## 📱 Responsive Behavior
+## Responsive Behavior
 
 * Full functionality across devices (desktops, tablets, mobiles).
 * Sticky notes rearrange and resize based on screen width.
 
 ---
 
-## 📦 Local Storage Format
+## Local Storage Format
 
 Notes are saved as an array of objects:
 
@@ -97,24 +96,12 @@ Notes are saved as an array of objects:
 
 ---
 
-## 📸 Preview
-
-*Add a screenshot here if available*
-
----
-
-## ✨ Future Enhancements
+## Future Enhancements
 
 * Drag & drop note positioning
 * Reminders with notification support
 * Dark mode toggle
 * Export/import notes as JSON
-
----
-
-## 📝 License
-
-This project is open-source and free to use under the [MIT License](https://opensource.org/licenses/MIT).
 
 ---
 
