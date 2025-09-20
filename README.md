@@ -1,13 +1,13 @@
 
 ---
 
-# 🕒 Analog Clock with Date & Sticky Notes 📝
+# Analog Clock with Date & Sticky Notes 
 
 A responsive and visually engaging web application that features a **live analog clock**, **real-time digital clock and date display**, and **interactive sticky notes** with **localStorage** support.
 
 ---
 
-## 📌 Features
+## Features
 
 * **Analog Clock** – Beautifully styled with rotating hour, minute, and second hands.
 * **Digital Clock & Date** – Displays current time, day of the week, month, and day.
@@ -105,7 +105,7 @@ Notes are saved as an array of objects:
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Rohit**
 
