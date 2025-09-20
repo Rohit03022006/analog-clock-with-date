@@ -6,6 +6,7 @@
 A responsive and visually engaging web application that features a **live analog clock**, **real-time digital clock and date display**, and **interactive sticky notes** with **localStorage** support.
 
 ---
+![Preview](./analog-clock-with-date.PNG)
 
 ## Features
 
